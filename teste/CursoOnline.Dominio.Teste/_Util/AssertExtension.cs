@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using Xunit;
 
 namespace CursoOnline.Dominio.Teste._Util
@@ -16,7 +13,7 @@ namespace CursoOnline.Dominio.Teste._Util
             }
             else
             {
-                Assert.True(true);
+                Assert.True(true, $"era esperado a mensagem: {mensagem}");
             }
 
         }
