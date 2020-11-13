@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using CursoOnline.Dominio.Cursos;
 using CursoOnline.Dominio.Teste._Builders;
 using CursoOnline.Dominio.Teste._Util;
 using ExpectedObjects;
@@ -55,7 +56,7 @@ namespace CursoOnline.Dominio.Teste.Cursos
             };
 
             //AÇÃO
-            var curso = new Curso(cursoEsperado.Nome,cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.PublicoAlvo, cursoEsperado.Valor);
+            var curso = new Curso(cursoEsperado.Nome, cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.PublicoAlvo, cursoEsperado.Valor);
 
             //ASSERT
             cursoEsperado.ToExpectedObject().ShouldMatch(curso);
@@ -72,6 +73,17 @@ namespace CursoOnline.Dominio.Teste.Cursos
                   .ComMensagem("Nome invalido");
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void NaoDeveCursoTerDescricaoInvalido(string descricaoInvalido)
+        {
+            //ASSERT
+            Assert.Throws<ArgumentException>(() =>
+                 CursoBuilder.Novo().ComDescricao(descricaoInvalido).Build())
+                  .ComMensagem("Descricao invalida");
+        }
+
 
         [Theory]
         [InlineData(0)]
@@ -80,7 +92,7 @@ namespace CursoOnline.Dominio.Teste.Cursos
         {
             //ASSERT
             Assert.Throws<ArgumentException>(() =>
-            CursoBuilder.Novo().ComCargaHoraria(cargaHorariaInvalida).Build()) 
+            CursoBuilder.Novo().ComCargaHoraria(cargaHorariaInvalida).Build())
                 .ComMensagem("Carga horaria invalida");
 
         }
@@ -92,48 +104,11 @@ namespace CursoOnline.Dominio.Teste.Cursos
         {
             //ASSERT
             Assert.Throws<ArgumentException>(() =>
-                CursoBuilder.Novo().ComValor(valorInvalido).Build()) 
+                CursoBuilder.Novo().ComValor(valorInvalido).Build())
            .ComMensagem("Valor invalido");
         }
 
 
     }
-    public enum PublicoAlvo
-    {
-        Estudante,
-        Universitario,
-        Empregado,
-        Empreendedor
-    }
-
-    public class Curso
-    {
-        public string Nome { get; private set; }
-        public string Descricao { get; set; }
-        public double CargaHoraria { get; private set; }
-        public PublicoAlvo PublicoAlvo { get; private set; }
-        public double Valor { get; private set; }
-
-        public Curso(string nome, string descricao, double cargaHoraria, PublicoAlvo publicoAlvo, double valor)
-        {
-            if (string.IsNullOrEmpty(nome))
-            {
-                throw new ArgumentException("Nome invalido");
-            }
-            if (cargaHoraria < 1)
-            {
-                throw new ArgumentException("Carga horaria invalida");
-            }
-
-            if (valor < 1)
-            {
-                throw new ArgumentException("Valor invalido");
-            }
-            Nome = nome;
-            CargaHoraria = cargaHoraria;
-            PublicoAlvo = publicoAlvo;
-            Valor = valor;
-            Descricao = descricao;
-        }
-    }
 }
+

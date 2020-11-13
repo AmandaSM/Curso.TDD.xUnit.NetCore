@@ -1,4 +1,5 @@
-﻿using CursoOnline.Dominio.Teste.Cursos;
+﻿using CursoOnline.Dominio.Cursos;
+using CursoOnline.Dominio.Teste.Cursos;
 using System;
 using System.Collections.Generic;
 using System.Text;
