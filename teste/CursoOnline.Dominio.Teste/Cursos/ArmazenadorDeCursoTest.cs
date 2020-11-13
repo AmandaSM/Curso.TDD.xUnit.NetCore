@@ -1,10 +1,8 @@
 ﻿using Bogus;
-using CursoOnline.Dominio.Cursos;
+using CursoOnline.Dominio.Teste._Builders;
 using CursoOnline.Dominio.Teste._Util;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace CursoOnline.Dominio.Teste.Cursos
@@ -51,44 +49,14 @@ namespace CursoOnline.Dominio.Teste.Cursos
             Assert.Throws<ArgumentException>(() => _armazenadorCurso.Armazenar(_cursoDTO))
             .ComMensagem("Publico Alvo Invalido");
         }
-
-    }
-    public interface ICursoRepositorio
-    {
-        void Adicionar(Curso curso);
-    }
-
-    public class ArmazenadorDeCurso
-    {
-        private readonly ICursoRepositorio _cursoRepositorio;
-
-        public ArmazenadorDeCurso(ICursoRepositorio cursoRepositorio)
+        [Fact]
+        public void NaoDeveAdicionarCursoComMesmoNomeJasalvo()
         {
-            _cursoRepositorio = cursoRepositorio;
+            var cursoJaSalvo = CursoBuilder.Novo().ComNome(_cursoDTO.Nome).Build();
+            _cursoRepositorioMock.Setup(r => r.ObterPeloNome(_cursoDTO.Nome)).Returns(cursoJaSalvo);
+            Assert.Throws<ArgumentException>(() => _armazenadorCurso.Armazenar(_cursoDTO))
+           .ComMensagem("Nome do curso já contem no banco de Dados ");
         }
 
-        public void Armazenar(CursoDTO cursoDTO)
-        {
-            Enum.TryParse(typeof(PublicoAlvo), cursoDTO.PublicoAlvo, out var publicoAlvo);//parseando(quest) e criando uma variavel
-            if (publicoAlvo == null)
-            {
-                throw new ArgumentException("Publico alvo invalido");
-            }
-
-            var curso = new Curso(cursoDTO.Nome, cursoDTO.Descricao, cursoDTO.CargaHoraria,(PublicoAlvo) publicoAlvo,
-                cursoDTO.Valor);
-            _cursoRepositorio.Adicionar(curso);
-        }
-    }
-
-    public class CursoDTO
-    {
-        public string Nome { get; set; }
-        public string Descricao { get; set; }
-        public double CargaHoraria { get; set; }
-        public string PublicoAlvo { get; set; }
-        public double Valor { get; set; }
     }
 }
-
-
