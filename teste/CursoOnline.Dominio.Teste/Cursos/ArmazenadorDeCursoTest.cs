@@ -1,4 +1,5 @@
-﻿using CursoOnline.Dominio.Cursos;
+﻿using Bogus;
+using CursoOnline.Dominio.Cursos;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -9,23 +10,36 @@ namespace CursoOnline.Dominio.Teste.Cursos
 {
     public class ArmazenadorDeCursoTest
     {
+        private CursoDTO _cursoDTO;
+        private Mock<ICursoRepositorio> _cursoRepositorioMock;
+        private ArmazenadorDeCurso _armazenadorCurso;
+
+        public ArmazenadorDeCursoTest()
+        {
+            var faker = new Faker();
+            _cursoDTO = new CursoDTO
+            {//OBJ transferencia
+                Nome = faker.Random.Word(),
+                Descricao = faker.Lorem.Paragraph(),
+                CargaHoraria = faker.Random.Double(50.100),
+                PublicoAlvo = 1,
+                Valor = faker.Random.Double(100.100)
+                 
+        };
+            _cursoRepositorioMock = new Mock<ICursoRepositorio>();//valida se algum comportamento está funcionado ou n(ao chamalo)
+            _armazenadorCurso = new ArmazenadorDeCurso(_cursoRepositorioMock.Object);// injentando atraves de um construtor
+
+        }
         [Fact]
         public void DeveAdicionarCurso()
         {
-            var cursoDTO = new CursoDTO
-            {//OBJ transferencia
-                Nome = "Curso A",
-                Descricao = "Descricao",
-                CargaHoraria = 10.0,
-                PublicoAlvo = 1,
-                Valor = 10.0
-            };
-
             //DomainService
-            var cursoRepositorioMock = new Mock<ICursoRepositorio>();//valida se algum comportamento está funcionado ou n(ao chamalo)
-            var armazenadorCurso = new ArmazenadorDeCurso(cursoRepositorioMock.Object);// injentando atraves de um construtor
-            armazenadorCurso.Armazenar(cursoDTO);
-            cursoRepositorioMock.Verify(r => r.Adicionar(It.IsAny<Curso>()));
+            _armazenadorCurso.Armazenar(_cursoDTO);
+            _cursoRepositorioMock.Verify(r => r.Adicionar(It.Is<Curso>( c=> c.Nome == _cursoDTO.Nome
+                && c.Descricao == _cursoDTO.Descricao
+                && c.CargaHoraria == _cursoDTO.CargaHoraria
+                && c.Valor == _cursoDTO.Valor
+                )));
         }
 
     }
@@ -33,6 +47,7 @@ namespace CursoOnline.Dominio.Teste.Cursos
     {
         void Adicionar(Curso curso);
     }
+
     public class ArmazenadorDeCurso
     {
         private readonly ICursoRepositorio _cursoRepositorio;
@@ -58,9 +73,6 @@ namespace CursoOnline.Dominio.Teste.Cursos
         public int PublicoAlvo { get; set; }
         public double Valor { get; set; }
     }
-
-
-
 }
 
 
